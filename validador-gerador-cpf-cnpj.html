@@ -18,6 +18,25 @@
 				width: 120px;
 				height: 24px;
 			}
+			#formulario{
+				padding-left: 10px;
+				padding-right: 10px;
+				margin-left: 10px;
+				margin-right: 10px;
+			}
+			#titulo,
+			#descricao{
+				text-align: center;
+			}
+			footer{
+				margin-top: 10px;
+				margin-bottom: 10px;
+				text-align: center;
+				display: flex; 
+				justify-items: center;
+				flex-direction: column;
+			}
+
 		</style>
 		<script language="javascript">
 		const operacoes = {
@@ -332,27 +351,36 @@
 	<body>
 		<h1 id="titulo">VALIDADOR \ GERADOR</h1>
 		<p id="descricao">Validador e Gerador de CPF/CNPJ Válidos</p>
-		<form>
+		<div id="formulario">
+			<form>
+				<hr />
+					<ul>
+						<li><label id="ls1">Gerar CPF</label></li>
+						<li><label id="ls2">Gerar CNPJ</label></li>
+						<li><label id="ls3">Validar CPF</label></li>
+						<li><label id="ls4">Validar CNPJ</label></li>
+					</ul>
+				<hr />
+				<input type="button" id="algb" class="botao" value="Gerar CPF" onclick="executarOperacao(operacoes.GERAR_CPF);"/>
+				<input type="button" id="algc" class="botao" value="Gerar CNPJ" onclick="executarOperacao(operacoes.GERAR_CNPJ);"/>
+				<input type="button" id="alga" class="botao" value="Validar CPF" onclick="executarOperacao(operacoes.VALIDAR_CPF);"/>
+				<input type="button" id="algc" class="botao" value="Validar CNPJ" onclick="executarOperacao(operacoes.VALIDAR_CNPJ);"/>
+				<input type="button" id="algc" class="botao" value="Copiar" onclick="copiar();"/>
+				<input type="button" id="algc" class="botao" value="Limpar" onclick="limparCampo();"/>
+				<hr />
+				<label>CPF/CNPJ:</label>
+				<input type="text" id="txt-cpf-cnpj" class="texto" value="" placeholder="CPF/CNPJ" onkeyup="removeCharNaN();"/>
+				<input type="checkbox" id="mascara" name="Mascara" value="Mascara" onclick="inserirMascara();"><label for="mascara"> Mascara CPF/CNPJ</label> | 
+				<label id="resultado" class="texto" value="CPF"></label>
+				<hr />
+			</form>
+			<footer>
+				<small>Validador/Gerador de CPF/CNPJ Válidos - 2023</small>
+				<small>Desenvolvido por Marcos Willian de Souza</small>
+				<small>E-mail: marcosws@ymail.com</small>
+				<small>Github: https://github.com/marcosws</small>
+			</footer>
 			<hr />
-				<ul>
-					<li><label id="ls1">Gerar CPF</label></li>
-					<li><label id="ls2">Gerar CNPJ</label></li>
-					<li><label id="ls3">Validar CPF</label></li>
-					<li><label id="ls4">Validar CNPJ</label></li>
-				</ul>
-			<hr />
-			<input type="button" id="algb" class="botao" value="Gerar CPF" onclick="executarOperacao(operacoes.GERAR_CPF);"/>
-			<input type="button" id="algc" class="botao" value="Gerar CNPJ" onclick="executarOperacao(operacoes.GERAR_CNPJ);"/>
-			<input type="button" id="alga" class="botao" value="Validar CPF" onclick="executarOperacao(operacoes.VALIDAR_CPF);"/>
-			<input type="button" id="algc" class="botao" value="Validar CNPJ" onclick="executarOperacao(operacoes.VALIDAR_CNPJ);"/>
-			<input type="button" id="algc" class="botao" value="Copiar" onclick="copiar();"/>
-			<input type="button" id="algc" class="botao" value="Limpar" onclick="limparCampo();"/>
-			<hr />
-			<label>CPF/CNPJ:</label>
-			<input type="text" id="txt-cpf-cnpj" class="texto" value="" placeholder="CPF/CNPJ" onkeyup="removeCharNaN();"/>
-			<input type="checkbox" id="mascara" name="Mascara" value="Mascara" onclick="inserirMascara();"><label for="mascara"> Mascara CPF/CNPJ</label> | 
-			<label id="resultado" class="texto" value="CPF"></label>
-			<hr />
-		</form>
+		</div>
 	</body>
 </html>
