@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Validador | Gerador</title>
+		<style type="text/css">
+			html{
+				font-family: lucida console;
+				color: lightgray;
+				background-color: navy;
+				font-size: 12px;
+			}
+			.botao{
+				font-family: lucida console;
+				color: navy;
+				background-color: lightgray;
+				font-weight: bold;
+				width: 120px;
+				height: 24px;
+			}
+		</style>
+		<script language="javascript">
+		const operacoes = {
+			GERAR_CPF: "GERAR_CPF",
+			GERAR_CNPJ: "GERAR_CNPJ",
+			VALIDAR_CPF: "VALIDAR_CPF",
+			VALIDAR_CNPJ: "VALIDAR_CNPJ",
+		}
+		var operacao = operacoes.GERAR_CPF;
+		function executarOperacao(operacao){
+			switch(operacao){
+				case operacoes.GERAR_CPF:
+					normalizarLabel();
+					document.getElementById("ls1").style.fontWeight = "bold"; 
+					document.getElementById('txt-cpf-cnpj').value = gerarCpf();
+					inserirMascara();
+					imprimeResultado("Gerou o CPF.","lime");
+					break;
+				case operacoes.GERAR_CNPJ:
+					normalizarLabel();
+					document.getElementById("ls2").style.fontWeight = "bold"; 
+					document.getElementById('txt-cpf-cnpj').value = gerarCnpj();
+					inserirMascara();
+					imprimeResultado("Gerou o CNPJ.","lime");			
+					break;
+				case operacoes.VALIDAR_CPF:
+					normalizarLabel();
+					document.getElementById("ls3").style.fontWeight = "bold"; 
+					if(document.getElementById('txt-cpf-cnpj').value != ""){
+						if(validarCpf(document.getElementById('txt-cpf-cnpj').value)){
+							imprimeResultado("CPF Válido.","lime");
+						}
+						else{
+							imprimeResultado("CPF Inválido.","red");
+						}
+					}
+					else{
+						imprimeResultado("Digite o CPF no campo para Validar!","yellow");
+					}
+					break;
+				case operacoes.VALIDAR_CNPJ:
+					normalizarLabel();
+					document.getElementById("ls4").style.fontWeight = "bold"; 
+					if(document.getElementById('txt-cpf-cnpj').value != ""){
+						if(validarCnpj(document.getElementById('txt-cpf-cnpj').value)){
+							imprimeResultado("CNPJ Válido.","lime");
+						}
+						else{
+							imprimeResultado("CNPJ Inválido.","red");
+						}
+					}
+					else{
+						imprimeResultado("Digite o CNPJ no campo para Validar!","yellow");
+					}
+					break;
+			}
+		}
+		function copiar(){
+			var cpfCnpj = document.getElementById('txt-cpf-cnpj').value;
+			if(cpfCnpj !== ""){
+				document.getElementById('txt-cpf-cnpj').select();
+				var copiou = document.execCommand('copy');
+				if(copiou){
+					imprimeResultado("Copiou CPF/CNPJ: " + cpfCnpj + ".","lime");
+				}
+			}
+			else{
+				imprimeResultado("Campo CPF/CNPJ vazio!","yellow");
+			}
+		}
+		function normalizarLabel(){
+			document.getElementById("ls1").style.fontWeight = "normal";
+			document.getElementById("ls2").style.fontWeight = "normal"; 
+			document.getElementById("ls3").style.fontWeight = "normal"; 
+			document.getElementById("ls4").style.fontWeight = "normal"; 
+		}
+		function inserirMascara(){
+			var campoCpfCnpj = document.getElementById('txt-cpf-cnpj').value;
+			if(document.getElementById('mascara').checked){
+				var campoTratado = mascaraCpfCnpj(campoCpfCnpj);
+				document.getElementById('txt-cpf-cnpj').value = campoTratado;
+			}
+			else{
+			    var campoTratado =  campoCpfCnpj.replace(/[^0-9]/g, '');
+				document.getElementById('txt-cpf-cnpj').value = campoTratado;
+			}
+		}
+		function limparCampo(){
+			normalizarLabel();
+			document.getElementById('txt-cpf-cnpj').value = "";
+			document.getElementById('resultado').innerHTML = "";
+		}
+		function removeCharNaN(){
+			var campoCpfCnpj = document.getElementById('txt-cpf-cnpj').value;
+			var campoTratado = campoCpfCnpj.replace(/[^0-9]/g, '');
+			document.getElementById('txt-cpf-cnpj').value = campoTratado;
+		}
+		function imprimeResultado(msg,color){
+			document.getElementById('resultado').innerHTML = msg;
+			document.getElementById('resultado').style.color = color;
+		}
+		function gerarCpf(){
+		
+			var cpf = gerarNumero(9);
+			var peso_mult1 = [10,9,8,7,6,5,4,3,2];
+			var peso_mult2 = [11,10,9,8,7,6,5,4,3,2];
+			var soma = 0;
+			
+			for(var i = 0; i < 9; i++)
+				soma += peso_mult1[i] * parseInt(cpf.substr(i,1));
+				
+			var resto = soma % 11;
+			if(resto < 2)
+				resto = 0;
+			else
+			resto = 11 - resto;
+				
+			var digito = resto.toString();
+			var parc_cpf = cpf.substr(0,9) + digito;
+			soma = 0;
+				
+			for(var j = 0; j < 10; j++)
+					soma += peso_mult2[j] * parseInt(parc_cpf.substr(j,1));
+				
+			resto = soma % 11;
+			if(resto < 2)
+					resto = 0;
+			else
+					resto = 11 - resto;
+				
+			digito += resto.toString();
+			
+			return cpf + digito;
+			
+		}
+		function gerarCnpj(){
+		
+			var cnpj = gerarNumero(8) + "0001";
+			var peso_mult1 = [5,4,3,2,9,8,7,6,5,4,3,2];
+			var peso_mult2 = [6,5,4,3,2,9,8,7,6,5,4,3,2];
+			var soma = 0;
+				
+			for(var i = 0; i < 12; i++){
+				soma += peso_mult1[i] * parseInt(cnpj.substr(i,1));
+			}
+
+			var resto = soma % 11;
+			if(resto < 2){
+				resto = 0;
+			}
+			else{
+				resto = 11 - resto;
+			}
+				
+			var digito = resto.toString();
+			var parc_cnpj = cnpj.substr(0,12) + digito;
+			soma = 0;
+				
+			for(var j = 0; j < 13; j++){
+				soma += peso_mult2[j] * parseInt(parc_cnpj.substr(j,1));
+			}
+				
+			resto = soma % 11;
+			if(resto < 2){
+				resto = 0;
+			}
+			else{
+				resto = 11 - resto;
+			}
+				
+			digito += resto.toString();
+			return cnpj + digito;
+			
+		}
+		function validarCpf(cpf){
+			
+				cpf = cpf.toString();
+				cpf = cpf.replace(/[^0-9]/g, '');
+			
+				if(cpf.length != 11)
+					return false;
+				
+				var rep = 0;
+				for(var r = 0; r < 10; r++){
+					if(cpf.substr(r,1) === cpf.substr(10,1))
+						rep += 1;
+					if(rep === 10)
+						return false;
+				}
+				
+				var soma = 0;
+				var valida = false;
+				var peso_mult1 = [10,9,8,7,6,5,4,3,2];
+				var peso_mult2 = [11,10,9,8,7,6,5,4,3,2];
+				
+				for(var i = 0; i < 9; i++)
+					soma += peso_mult1[i] * parseInt(cpf.substr(i,1));
+				
+				var resto = soma % 11;
+				if(resto < 2)
+					resto = 0;
+				else
+					resto = 11 - resto;
+				
+				var digito = resto.toString();
+				var parc_cpf = cpf.substr(0,9) + digito;
+				soma = 0;
+				
+				for(var j = 0; j < 10; j++)
+					soma += peso_mult2[j] * parseInt(parc_cpf.substr(j,1));
+				
+				resto = soma % 11;
+				if(resto < 2)
+					resto = 0;
+				else
+					resto = 11 - resto;
+				
+				digito += resto.toString();
+				if(cpf.substr(9,2) === digito)
+					valida = true;
+
+				return valida;
+			}
+			function validarCnpj(cnpj){
+
+				cnpj = cnpj.toString();
+				cnpj = cnpj.replace(/[^0-9]/g, '');
+				
+				if(cnpj.length != 14){
+					return false;
+				}
+				
+				var rep = 0;
+				for(var r = 0; r < 13; r++){
+					if(cnpj.substr(r,1) === cnpj.substr(13,1)){
+						rep += 1;
+					}
+					if(rep === 13){
+						return false;
+					}
+				}
+				
+				var soma = 0;
+				var valida = false;
+				var peso_mult1 = [5,4,3,2,9,8,7,6,5,4,3,2];
+				var peso_mult2 = [6,5,4,3,2,9,8,7,6,5,4,3,2];
+				
+				for(var i = 0; i < 12; i++){
+					soma += peso_mult1[i] * parseInt(cnpj.substr(i,1));
+				}
+
+				var resto = soma % 11;
+				if(resto < 2){
+					resto = 0;
+				}
+				else{
+					resto = 11 - resto;
+				}
+				
+				var digito = resto.toString();
+				var parc_cnpj = cnpj.substr(0,12) + digito;
+				soma = 0;
+				
+				for(var j = 0; j < 13; j++){
+					soma += peso_mult2[j] * parseInt(parc_cnpj.substr(j,1));
+				}
+				
+				resto = soma % 11;
+				if(resto < 2){
+					resto = 0;
+				}
+				else{
+					resto = 11 - resto;
+				}
+				
+				digito += resto.toString();
+				if(cnpj.substr(12,2) === digito){
+					valida = true;
+				}
+				return valida;
+			}
+			function mascaraCpfCnpj(cpfCnpj){
+
+				cpfCnpj = cpfCnpj.toString();
+				cpfCnpj = cpfCnpj.replace(/[^0-9]/g, '');
+				
+				if(cpfCnpj.length === 11){
+					var mascara = cpfCnpj.substring(0,3) + ".";
+					mascara += cpfCnpj.substring(3,6) + ".";
+					mascara += cpfCnpj.substring(6,9)+ "-";
+					mascara += cpfCnpj.substring(9,11);
+					return mascara;
+				}
+				else if(cpfCnpj.length === 14){
+					var mascara = cpfCnpj.substring(0,2) + ".";
+					mascara += cpfCnpj.substring(2,5) + ".";
+					mascara += cpfCnpj.substring(5,8)+ "/";
+					mascara += cpfCnpj.substring(8,12) + "-";
+					mascara += cpfCnpj.substring(12,14);
+					return mascara;
+				}
+				return cpfCnpj;
+			}
+			function gerarNumero(numCasas){
+				var numero = "";
+				for(var i = 0; i < numCasas; i++)
+					numero += Math.round(Math.random() * 9);
+				return numero;
+			}
+		</script>
+	</head>
+	<body>
+		<h1 id="titulo">VALIDADOR \ GERADOR</h1>
+		<p id="descricao">Validador e Gerador de CPF/CNPJ Válidos</p>
+		<form>
+			<hr />
+				<ul>
+					<li><label id="ls1">Gerar CPF</label></li>
+					<li><label id="ls2">Gerar CNPJ</label></li>
+					<li><label id="ls3">Validar CPF</label></li>
+					<li><label id="ls4">Validar CNPJ</label></li>
+				</ul>
+			<hr />
+			<input type="button" id="algb" class="botao" value="Gerar CPF" onclick="executarOperacao(operacoes.GERAR_CPF);"/>
+			<input type="button" id="algc" class="botao" value="Gerar CNPJ" onclick="executarOperacao(operacoes.GERAR_CNPJ);"/>
+			<input type="button" id="alga" class="botao" value="Validar CPF" onclick="executarOperacao(operacoes.VALIDAR_CPF);"/>
+			<input type="button" id="algc" class="botao" value="Validar CNPJ" onclick="executarOperacao(operacoes.VALIDAR_CNPJ);"/>
+			<input type="button" id="algc" class="botao" value="Copiar" onclick="copiar();"/>
+			<input type="button" id="algc" class="botao" value="Limpar" onclick="limparCampo();"/>
+			<hr />
+			<label>CPF/CNPJ:</label>
+			<input type="text" id="txt-cpf-cnpj" class="texto" value="" placeholder="CPF/CNPJ" onkeyup="removeCharNaN();"/>
+			<input type="checkbox" id="mascara" name="Mascara" value="Mascara" onclick="inserirMascara();"><label for="mascara"> Mascara CPF/CNPJ</label> | 
+			<label id="resultado" class="texto" value="CPF"></label>
+			<hr />
+		</form>
+	</body>
+</html>
